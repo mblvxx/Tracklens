@@ -65,7 +65,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">ЛинзоТрек</h1>
-            <span id="tgUserBadge" class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-100 text-brand-800">FreshLens</span>
+            <span id="tgUserBadge" class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-100 text-brand-800">TG App</span>
           </div>
           <p class="text-xs text-slate-500 font-medium leading-none mt-1" id="headerDateDisplay">Сегодня: ...</p>
         </div>
@@ -82,7 +82,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Новая пара</span>
+          <span id="headerActionText">Настроить линзы</span>
         </button>
       </div>
     </div>
@@ -93,300 +93,334 @@
 
     <div id="smartPurchaseBanner" class="hidden rounded-2xl p-4 sm:p-5 border shadow-sm transition-all duration-300"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- ZERO STATE (Когда линзы еще не настроены) -->
+    <div id="sectionZeroState" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-10 text-center space-y-5">
+      <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-200 text-brand-600 mx-auto flex items-center justify-center shadow-inner">
+        <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      </div>
 
-      <!-- LEFT COLUMN -->
-      <section class="lg:col-span-7 space-y-6">
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-          <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-50/50 to-white">
-            <div class="flex items-center gap-2.5">
-              <span class="w-3 h-3 rounded-full bg-brand-500 animate-pulse"></span>
-              <h2 class="text-base font-bold text-slate-900">Текущие линзы</h2>
-              <span id="badgeLensStatus" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-800">Свежие</span>
+      <div class="max-w-md mx-auto space-y-2">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Добро пожаловать в ЛинзоТрек!</h2>
+        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
+          У вас пока нет активных линз. Укажите дату начала ношения и срок службы вашей пары — приложение начнет считать свежесть и рассчитывать дату следующего заказа.
+        </p>
+      </div>
+
+      <div class="pt-2">
+        <button id="btnStartSetup" type="button" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold text-sm shadow-md shadow-brand-600/30 transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Добавить первую пару линз
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN TRACKER CONTENT (Появляется после сохранения линз) -->
+    <div id="sectionActiveTracker" class="hidden space-y-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: Active Lenses Tracker -->
+        <section class="lg:col-span-7 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+            <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-50/50 to-white">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-brand-500 animate-pulse"></span>
+                <h2 class="text-base font-bold text-slate-900">Текущие линзы</h2>
+                <span id="badgeLensStatus" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-800">Свежие</span>
+              </div>
+
+              <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-medium">
+                <button id="btnModePair" type="button" class="px-3 py-1 rounded-lg transition-all shadow-sm bg-white text-slate-800 font-semibold">Пара линз</button>
+                <button id="btnModeSeparate" type="button" class="px-3 py-1 rounded-lg transition-all text-slate-500 hover:text-slate-800">Раздельно (OD / OS)</button>
+              </div>
             </div>
 
-            <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-medium">
-              <button id="btnModePair" type="button" class="px-3 py-1 rounded-lg transition-all shadow-sm bg-white text-slate-800 font-semibold">Пара линз</button>
-              <button id="btnModeSeparate" type="button" class="px-3 py-1 rounded-lg transition-all text-slate-500 hover:text-slate-800">Раздельно (OD / OS)</button>
+            <!-- PAIR MODE -->
+            <div id="viewPairMode" class="p-5 sm:p-6 space-y-6">
+              <div class="flex flex-col sm:flex-row items-center gap-6">
+                <div class="relative flex-shrink-0 w-44 h-44 flex items-center justify-center">
+                  <svg class="w-44 h-44" viewBox="0 0 160 160">
+                    <circle cx="80" cy="80" r="70" stroke="#f1f5f9" stroke-width="12" fill="none" />
+                    <circle id="progressCircle" class="circular-progress" cx="80" cy="80" r="70" stroke="#0d9488" stroke-width="12" stroke-linecap="round" fill="none" stroke-dasharray="439.82" stroke-dashoffset="100" />
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                    <span id="progressPercent" class="text-3xl font-extrabold text-slate-900 tracking-tight">100%</span>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">свежесть</span>
+                    <span id="progressDaysBadge" class="mt-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">День 1 из 14</span>
+                  </div>
+                </div>
+
+                <div class="flex-1 w-full space-y-4">
+                  <div>
+                    <div class="flex items-baseline justify-between">
+                      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Модель / Бренд</span>
+                      <button id="btnEditCurrentLens" type="button" class="text-xs font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1 hover:underline">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        Изменить
+                      </button>
+                    </div>
+                    <h3 id="displayBrandName" class="text-base sm:text-lg font-bold text-slate-800 leading-snug">Мои линзы</h3>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span class="text-xs text-slate-500 block">Открыты:</span>
+                      <span id="displayStartDate" class="font-semibold text-slate-800">—</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span class="text-xs text-slate-500 block">Срок ношения:</span>
+                      <span id="displayDuration" class="font-semibold text-slate-800">—</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span class="text-xs text-slate-500 block">Плановая замена:</span>
+                      <span id="displayEndDate" class="font-semibold text-brand-700">—</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span class="text-xs text-slate-500 block">Осталось носить:</span>
+                      <span id="displayDaysLeft" class="font-bold text-slate-900">—</span>
+                    </div>
+                  </div>
+
+                  <div class="text-xs text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
+                    <span>Рецепт: OD <strong id="quickOD" class="text-slate-700">—</strong> | OS <strong id="quickOS" class="text-slate-700">—</strong></span>
+                    <span id="quickBC" class="text-slate-400">BC 8.4</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-slate-100 flex flex-wrap sm:flex-nowrap gap-3">
+                <button id="btnReplacePairNow" type="button" class="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-semibold text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  Заменить пару сейчас
+                </button>
+                <button id="btnOpenCalendarExport" type="button" class="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-700 font-semibold text-sm flex items-center justify-center gap-2 transition-all">
+                  <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  В календарь (.ics)
+                </button>
+              </div>
+            </div>
+
+            <!-- SEPARATE MODE -->
+            <div id="viewSeparateMode" class="hidden p-5 sm:p-6 space-y-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-6 h-6 rounded-lg bg-eye-500 text-white font-bold text-xs flex items-center justify-center">OD</span>
+                      <span class="font-bold text-sm text-slate-800">Правый глаз</span>
+                    </div>
+                    <span id="badgeStatusOD" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Свежая</span>
+                  </div>
+                  <div class="space-y-1.5 text-xs text-slate-600">
+                    <div class="flex justify-between"><span>Диоптрия:</span><strong id="sepDiopterOD" class="text-slate-800">—</strong></div>
+                    <div class="flex justify-between"><span>Начало носки:</span><span id="sepStartDateOD">—</span></div>
+                    <div class="flex justify-between"><span>Срок ношения:</span><span id="sepPeriodOD">—</span></div>
+                    <div class="flex justify-between"><span>Плановая замена:</span><strong id="sepEndDateOD" class="text-brand-700">—</strong></div>
+                    <div class="flex justify-between"><span>Осталось:</span><strong id="sepDaysLeftOD" class="text-slate-900">—</strong></div>
+                  </div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div id="sepProgressBarOD" class="bg-brand-500 h-full rounded-full transition-all duration-500" style="width: 100%;"></div>
+                  </div>
+                  <button id="btnReplaceOD" type="button" class="w-full mt-2 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors">Сменить правый (OD)</button>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-6 h-6 rounded-lg bg-teal-600 text-white font-bold text-xs flex items-center justify-center">OS</span>
+                      <span class="font-bold text-sm text-slate-800">Левый глаз</span>
+                    </div>
+                    <span id="badgeStatusOS" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Свежая</span>
+                  </div>
+                  <div class="space-y-1.5 text-xs text-slate-600">
+                    <div class="flex justify-between"><span>Диоптрия:</span><strong id="sepDiopterOS" class="text-slate-800">—</strong></div>
+                    <div class="flex justify-between"><span>Начало носки:</span><span id="sepStartDateOS">—</span></div>
+                    <div class="flex justify-between"><span>Срок ношения:</span><span id="sepPeriodOS">—</span></div>
+                    <div class="flex justify-between"><span>Плановая замена:</span><strong id="sepEndDateOS" class="text-brand-700">—</strong></div>
+                    <div class="flex justify-between"><span>Осталось:</span><strong id="sepDaysLeftOS" class="text-slate-900">—</strong></div>
+                  </div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div id="sepProgressBarOS" class="bg-teal-500 h-full rounded-full transition-all duration-500" style="width: 100%;"></div>
+                  </div>
+                  <button id="btnReplaceOS" type="button" class="w-full mt-2 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors">Сменить левый (OS)</button>
+                </div>
+              </div>
+              <div class="text-center">
+                <button id="btnEditCurrentLensFromSep" type="button" class="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline">⚙️ Настроить параметры OD / OS</button>
+              </div>
             </div>
           </div>
 
-          <!-- PAIR MODE -->
-          <div id="viewPairMode" class="p-5 sm:p-6 space-y-6">
-            <div class="flex flex-col sm:flex-row items-center gap-6">
-              <div class="relative flex-shrink-0 w-44 h-44 flex items-center justify-center">
-                <svg class="w-44 h-44" viewBox="0 0 160 160">
-                  <circle cx="80" cy="80" r="70" stroke="#f1f5f9" stroke-width="12" fill="none" />
-                  <circle id="progressCircle" class="circular-progress" cx="80" cy="80" r="70" stroke="#0d9488" stroke-width="12" stroke-linecap="round" fill="none" stroke-dasharray="439.82" stroke-dashoffset="100" />
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
-                  <span id="progressPercent" class="text-3xl font-extrabold text-slate-900 tracking-tight">85%</span>
-                  <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">свежесть</span>
-                  <span id="progressDaysBadge" class="mt-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">День 2 из 14</span>
-                </div>
-              </div>
-
-              <div class="flex-1 w-full space-y-4">
-                <div>
-                  <div class="flex items-baseline justify-between">
-                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Модель / Бренд</span>
-                    <button id="btnEditCurrentLens" type="button" class="text-xs font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1 hover:underline">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                      Изменить
-                    </button>
-                  </div>
-                  <h3 id="displayBrandName" class="text-base sm:text-lg font-bold text-slate-800 leading-snug">Acuvue Oasys with HydraLuxe</h3>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <span class="text-xs text-slate-500 block">Открыты:</span>
-                    <span id="displayStartDate" class="font-semibold text-slate-800">20.10.2026</span>
-                  </div>
-                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <span class="text-xs text-slate-500 block">Срок ношения:</span>
-                    <span id="displayDuration" class="font-semibold text-slate-800">2 недели (14 дн.)</span>
-                  </div>
-                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <span class="text-xs text-slate-500 block">Плановая замена:</span>
-                    <span id="displayEndDate" class="font-semibold text-brand-700">03.11.2026</span>
-                  </div>
-                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <span class="text-xs text-slate-500 block">Осталось носить:</span>
-                    <span id="displayDaysLeft" class="font-bold text-slate-900">8 дней</span>
-                  </div>
-                </div>
-
-                <div class="text-xs text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
-                  <span>Рецепт: OD <strong id="quickOD" class="text-slate-700">-3.50</strong> | OS <strong id="quickOS" class="text-slate-700">-3.75</strong></span>
-                  <span id="quickBC" class="text-slate-400">BC 8.4</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-slate-100 flex flex-wrap sm:flex-nowrap gap-3">
-              <button id="btnReplacePairNow" type="button" class="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-semibold text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Заменить пару сейчас
-              </button>
-              <button id="btnOpenCalendarExport" type="button" class="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-700 font-semibold text-sm flex items-center justify-center gap-2 transition-all">
-                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                В календарь (.ics)
-              </button>
-            </div>
-          </div>
-
-          <!-- SEPARATE MODE -->
-          <div id="viewSeparateMode" class="hidden p-5 sm:p-6 space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-eye-500 text-white font-bold text-xs flex items-center justify-center">OD</span>
-                    <span class="font-bold text-sm text-slate-800">Правый глаз</span>
-                  </div>
-                  <span id="badgeStatusOD" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Свежая</span>
-                </div>
-                <div class="space-y-1.5 text-xs text-slate-600">
-                  <div class="flex justify-between"><span>Диоптрия:</span><strong id="sepDiopterOD" class="text-slate-800">-3.50</strong></div>
-                  <div class="flex justify-between"><span>Начало носки:</span><span id="sepStartDateOD">20.10.2026</span></div>
-                  <div class="flex justify-between"><span>Срок ношения:</span><span id="sepPeriodOD">14 дн.</span></div>
-                  <div class="flex justify-between"><span>Плановая замена:</span><strong id="sepEndDateOD" class="text-brand-700">03.11.2026</strong></div>
-                  <div class="flex justify-between"><span>Осталось:</span><strong id="sepDaysLeftOD" class="text-slate-900">8 дн.</strong></div>
-                </div>
-                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                  <div id="sepProgressBarOD" class="bg-brand-500 h-full rounded-full transition-all duration-500" style="width: 57%;"></div>
-                </div>
-                <button id="btnReplaceOD" type="button" class="w-full mt-2 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors">Сменить правый (OD)</button>
-              </div>
-
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-teal-600 text-white font-bold text-xs flex items-center justify-center">OS</span>
-                    <span class="font-bold text-sm text-slate-800">Левый глаз</span>
-                  </div>
-                  <span id="badgeStatusOS" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Свежая</span>
-                </div>
-                <div class="space-y-1.5 text-xs text-slate-600">
-                  <div class="flex justify-between"><span>Диоптрия:</span><strong id="sepDiopterOS" class="text-slate-800">-3.75</strong></div>
-                  <div class="flex justify-between"><span>Начало носки:</span><span id="sepStartDateOS">20.10.2026</span></div>
-                  <div class="flex justify-between"><span>Срок ношения:</span><span id="sepPeriodOS">14 дн.</span></div>
-                  <div class="flex justify-between"><span>Плановая замена:</span><strong id="sepEndDateOS" class="text-brand-700">03.11.2026</strong></div>
-                  <div class="flex justify-between"><span>Осталось:</span><strong id="sepDaysLeftOS" class="text-slate-900">8 дн.</strong></div>
-                </div>
-                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                  <div id="sepProgressBarOS" class="bg-teal-500 h-full rounded-full transition-all duration-500" style="width: 57%;"></div>
-                </div>
-                <button id="btnReplaceOS" type="button" class="w-full mt-2 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors">Сменить левый (OS)</button>
-              </div>
-            </div>
-            <div class="text-center">
-              <button id="btnEditCurrentLensFromSep" type="button" class="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline">⚙️ Настроить параметры и сроки ношения OD / OS</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hygiene -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <svg class="w-4 h-4 text-eye-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-              Гигиена: Раствор и контейнер
-            </h3>
-            <button id="btnEditHygiene" type="button" class="text-xs font-medium text-slate-500 hover:text-slate-800">Настроить</button>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-2">
-              <div class="flex justify-between items-start">
-                <div>
-                  <span class="text-xs font-semibold text-slate-800 block">Флакон раствора</span>
-                  <span class="text-[11px] text-slate-500">Вскрыт: <span id="hygieneSolutionOpened">01.10.2026</span></span>
-                </div>
-                <span id="hygieneSolutionBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Годен</span>
-              </div>
-              <div class="space-y-1">
-                <div class="flex justify-between text-[11px] text-slate-600"><span>До утилизации:</span><strong id="hygieneSolutionDaysLeft" class="text-slate-800">62 дня</strong></div>
-                <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                  <div id="hygieneSolutionBar" class="bg-eye-500 h-full rounded-full" style="width: 68%;"></div>
-                </div>
-              </div>
-              <button id="btnResetSolution" type="button" class="mt-1 text-[11px] font-semibold text-eye-600 hover:text-eye-700 text-left hover:underline">+ Открыть новый флакон</button>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-2">
-              <div class="flex justify-between items-start">
-                <div>
-                  <span class="text-xs font-semibold text-slate-800 block">Контейнер для линз</span>
-                  <span class="text-[11px] text-slate-500">Взят: <span id="hygieneCaseOpened">15.09.2026</span></span>
-                </div>
-                <span id="hygieneCaseBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Скоро замена</span>
-              </div>
-              <div class="space-y-1">
-                <div class="flex justify-between text-[11px] text-slate-600"><span>Рекомендуется сменить:</span><strong id="hygieneCaseDaysLeft" class="text-slate-800">16 дней</strong></div>
-                <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                  <div id="hygieneCaseBar" class="bg-amber-500 h-full rounded-full" style="width: 25%;"></div>
-                </div>
-              </div>
-              <button id="btnResetCase" type="button" class="mt-1 text-[11px] font-semibold text-eye-600 hover:text-eye-700 text-left hover:underline">+ Сменить на новый контейнер</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT COLUMN: PURCHASE CALCULATOR -->
-      <section class="lg:col-span-5 space-y-6">
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-5">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              </div>
-              <div>
-                <h2 class="text-base font-bold text-slate-900 leading-tight">Калькулятор покупки</h2>
-                <p class="text-xs text-slate-500">Авторасчёт даты нового заказа</p>
-              </div>
-            </div>
-            <button id="btnPurchaseSettings" type="button" class="text-xs font-medium text-slate-500 hover:text-slate-800 p-1" title="Настройки доставки">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            </button>
-          </div>
-
-          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <!-- Hygiene Tracker -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-4">
             <div class="flex items-center justify-between">
-              <div>
-                <span class="text-xs font-semibold text-slate-700 block">Запас новых линз дома:</span>
-                <span class="text-[11px] text-slate-500">Нераспакованные пары в шкафчике</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <button id="btnDecrementStock" type="button" class="w-8 h-8 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold flex items-center justify-center transition-all">-</button>
-                <span id="displayStockPairs" class="text-lg font-extrabold text-slate-900 w-8 text-center">2</span>
-                <button id="btnIncrementStock" type="button" class="w-8 h-8 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold flex items-center justify-center transition-all">+</button>
-              </div>
+              <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-4 h-4 text-eye-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                Гигиена: Раствор и контейнер
+              </h3>
+              <button id="btnEditHygiene" type="button" class="text-xs font-medium text-slate-500 hover:text-slate-800">Настроить</button>
             </div>
 
-            <div class="flex items-center gap-1.5 pt-1 text-[11px]">
-              <span class="text-slate-400">Купили пачку:</span>
-              <button id="btnAddPack3" type="button" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 font-medium text-slate-600 transition-colors">+3 пары</button>
-              <button id="btnAddPack6" type="button" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 font-medium text-slate-600 transition-colors">+6 пар</button>
-              <button id="btnAddPack30" type="button" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 font-medium text-slate-600 transition-colors">+30 пар</button>
-            </div>
-          </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-2">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="text-xs font-semibold text-slate-800 block">Флакон раствора</span>
+                    <span class="text-[11px] text-slate-500">Вскрыт: <span id="hygieneSolutionOpened">—</span></span>
+                  </div>
+                  <span id="hygieneSolutionBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Годен</span>
+                </div>
+                <div class="space-y-1">
+                  <div class="flex justify-between text-[11px] text-slate-600"><span>До утилизации:</span><strong id="hygieneSolutionDaysLeft" class="text-slate-800">—</strong></div>
+                  <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div id="hygieneSolutionBar" class="bg-eye-500 h-full rounded-full" style="width: 100%;"></div>
+                  </div>
+                </div>
+                <button id="btnResetSolution" type="button" class="mt-1 text-[11px] font-semibold text-eye-600 hover:text-eye-700 text-left hover:underline">+ Открыть новый флакон</button>
+              </div>
 
-          <div class="space-y-3">
-            <div class="space-y-2 text-xs">
-              <div class="flex justify-between items-center py-1 border-b border-slate-100">
-                <span class="text-slate-600">Текущая пара закончится:</span>
-                <span id="calcCurrentPairEnd" class="font-semibold text-slate-800">03.11.2026</span>
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between space-y-2">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="text-xs font-semibold text-slate-800 block">Контейнер для линз</span>
+                    <span class="text-[11px] text-slate-500">Взят: <span id="hygieneCaseOpened">—</span></span>
+                  </div>
+                  <span id="hygieneCaseBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Чистый</span>
+                </div>
+                <div class="space-y-1">
+                  <div class="flex justify-between text-[11px] text-slate-600"><span>Рекомендуется сменить:</span><strong id="hygieneCaseDaysLeft" class="text-slate-800">—</strong></div>
+                  <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div id="hygieneCaseBar" class="bg-teal-600 h-full rounded-full" style="width: 100%;"></div>
+                  </div>
+                </div>
+                <button id="btnResetCase" type="button" class="mt-1 text-[11px] font-semibold text-eye-600 hover:text-eye-700 text-left hover:underline">+ Сменить на новый контейнер</button>
               </div>
-              <div class="flex justify-between items-center py-1 border-b border-slate-100">
-                <span class="text-slate-600">С учётом запаса хватит до:</span>
-                <span id="calcTotalStockEnd" class="font-bold text-slate-900">01.12.2026</span>
-              </div>
-              <div class="flex justify-between items-center py-1 border-b border-slate-100">
-                <span class="text-slate-600">Всего дней в линзах:</span>
-                <span id="calcTotalDaysVision" class="font-semibold text-brand-700">36 дней</span>
-              </div>
-              <div class="flex justify-between items-center py-1 text-slate-500">
-                <span>Срок доставки и запас времени:</span>
-                <span id="calcLeadTimeDays" class="font-medium text-slate-700">9 дней (4 дн. доставка + 5 дн. буфер)</span>
-              </div>
-            </div>
-
-            <div id="calcRecommendationBox" class="p-4 rounded-xl bg-gradient-to-br from-brand-50 to-eye-50 border border-brand-200/80 space-y-2">
-              <div class="flex items-center gap-2">
-                <span id="calcRecommendationIcon" class="w-6 h-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
-                <h4 id="calcRecommendationTitle" class="text-xs font-bold uppercase tracking-wider text-brand-900">Рекомендуемая дата заказа</h4>
-              </div>
-              <div class="flex items-baseline justify-between">
-                <span id="calcOrderDate" class="text-xl sm:text-2xl font-black text-brand-900">22.11.2026</span>
-                <span id="calcOrderCountdown" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-200/80 text-brand-800">через 24 дня</span>
-              </div>
-              <p id="calcRecommendationDesc" class="text-xs text-slate-600 leading-relaxed">
-                Сделайте заказ до указанной даты, чтобы посылка успела доехать до того, как закончится последняя пара из запаса.
-              </p>
             </div>
           </div>
+        </section>
 
-          <div class="space-y-2 pt-2 border-t border-slate-100">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Быстрые действия</span>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button id="btnCopyOrderSpecs" type="button" class="py-2 px-3 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center gap-1.5 transition-colors">
-                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                Скопировать рецепт
-              </button>
-              <button id="btnOrderCalendarExport" type="button" class="py-2 px-3 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center gap-1.5 transition-colors">
-                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Напомнить о заказе
+        <!-- RIGHT COLUMN: SMART PURCHASE CALCULATOR -->
+        <section class="lg:col-span-5 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                </div>
+                <div>
+                  <h2 class="text-base font-bold text-slate-900 leading-tight">Калькулятор покупки</h2>
+                  <p class="text-xs text-slate-500">Авторасчёт даты нового заказа</p>
+                </div>
+              </div>
+              <button id="btnPurchaseSettings" type="button" class="text-xs font-medium text-slate-500 hover:text-slate-800 p-1" title="Настройки доставки">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
               </button>
             </div>
+
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-semibold text-slate-700 block">Запас новых пар дома:</span>
+                  <span class="text-[11px] text-slate-500">Нераспакованные пары в шкафчике</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button id="btnDecrementStock" type="button" class="w-8 h-8 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold flex items-center justify-center transition-all">-</button>
+                  <span id="displayStockPairs" class="text-lg font-extrabold text-slate-900 w-8 text-center">0</span>
+                  <button id="btnIncrementStock" type="button" class="w-8 h-8 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold flex items-center justify-center transition-all">+</button>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5 pt-1 text-[11px]">
+                <span class="text-slate-400">Купили пачку:</span>
+                <button id="btnAddPack3" type="button" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 font-medium text-slate-600 transition-colors">+3 пары</button>
+                <button id="btnAddPack6" type="button" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 font-medium text-slate-600 transition-colors">+6 пар</button>
+                <button id="btnAddPack30" type="button" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 font-medium text-slate-600 transition-colors">+30 пар</button>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between items-center py-1 border-b border-slate-100">
+                  <span class="text-slate-600">Текущая пара закончится:</span>
+                  <span id="calcCurrentPairEnd" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-slate-100">
+                  <span class="text-slate-600">С учётом запаса хватит до:</span>
+                  <span id="calcTotalStockEnd" class="font-bold text-slate-900">—</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-slate-100">
+                  <span class="text-slate-600">Всего дней в линзах:</span>
+                  <span id="calcTotalDaysVision" class="font-semibold text-brand-700">—</span>
+                </div>
+                <div class="flex justify-between items-center py-1 text-slate-500">
+                  <span>Срок доставки и запас времени:</span>
+                  <span id="calcLeadTimeDays" class="font-medium text-slate-700">9 дней (4 дн. доставка + 5 дн. буфер)</span>
+                </div>
+              </div>
+
+              <div id="calcRecommendationBox" class="p-4 rounded-xl bg-gradient-to-br from-brand-50 to-eye-50 border border-brand-200/80 space-y-2">
+                <div class="flex items-center gap-2">
+                  <span id="calcRecommendationIcon" class="w-6 h-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                  <h4 id="calcRecommendationTitle" class="text-xs font-bold uppercase tracking-wider text-brand-900">Рекомендуемая дата заказа</h4>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span id="calcOrderDate" class="text-xl sm:text-2xl font-black text-brand-900">—</span>
+                  <span id="calcOrderCountdown" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-200/80 text-brand-800">—</span>
+                </div>
+                <p id="calcRecommendationDesc" class="text-xs text-slate-600 leading-relaxed">
+                  Сделайте заказ до указанной даты, чтобы посылка успела доехать до того, как закончится последняя пара из запаса.
+                </p>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Быстрые действия</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button id="btnCopyOrderSpecs" type="button" class="py-2 px-3 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center gap-1.5 transition-colors">
+                  <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                  Скопировать рецепт
+                </button>
+                <button id="btnOrderCalendarExport" type="button" class="py-2 px-3 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center gap-1.5 transition-colors">
+                  <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Напомнить о заказе
+                </button>
+              </div>
+            </div>
           </div>
+        </section>
+
+      </div>
+
+      <!-- History -->
+      <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <h3 class="text-base font-bold text-slate-900">История замен</h3>
+          </div>
+          <button id="btnClearHistory" type="button" class="text-xs font-medium text-slate-400 hover:text-rose-600 transition-colors">Очистить историю</button>
         </div>
+        <div id="historyContainer" class="overflow-x-auto"></div>
       </section>
 
     </div>
 
-    <!-- History -->
-    <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <h3 class="text-base font-bold text-slate-900">История замен</h3>
-        </div>
-        <button id="btnClearHistory" type="button" class="text-xs font-medium text-slate-400 hover:text-rose-600 transition-colors">Очистить историю</button>
-      </div>
-      <div id="historyContainer" class="overflow-x-auto"></div>
-    </section>
-
-    <!-- Tips -->
+    <!-- Tips & Reset -->
     <section class="bg-gradient-to-r from-slate-100/80 to-brand-50/50 rounded-2xl p-5 border border-slate-200/60 text-xs text-slate-600 space-y-2">
-      <div class="flex items-center gap-2 text-slate-800 font-bold">
-        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>Памятка офтальмолога по срокам ношения линз:</span>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-slate-800 font-bold">
+          <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Памятка офтальмолога:</span>
+        </div>
+        <button id="btnResetAllData" type="button" class="text-[11px] font-medium text-slate-400 hover:text-rose-600 transition-colors">Сбросить все данные</button>
       </div>
       <p class="leading-relaxed">
-        Срок ношения отсчитывается <strong>с момента вскрытия блистера</strong>, а не по количеству фактически надетых дней. Перенашивание линз приводит к гипоксии роговицы.
+        Срок ношения отсчитывается <strong>с момента вскрытия блистера</strong>, а не по фактическим дням. Перенашивание линз приводит к гипоксии роговицы.
       </p>
     </section>
 
@@ -409,16 +443,16 @@
       <form id="formEditLens" class="p-5 space-y-4 text-xs sm:text-sm">
         <div>
           <label class="block font-semibold text-slate-700 mb-1" for="inputBrand">Бренд / Модель линз</label>
-          <input type="text" id="inputBrand" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500" placeholder="Например: Acuvue Oasys, Biofinity, Dailies">
+          <input type="text" id="inputBrand" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500" placeholder="Например: Acuvue Oasys, Biofinity, Dailies" required>
         </div>
 
         <div>
           <label class="block font-semibold text-slate-700 mb-1" for="inputStartDate">Дата начала ношения (вскрытия блистера)</label>
-          <input type="date" id="inputStartDate" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500">
+          <input type="date" id="inputStartDate" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500" required>
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1.5">Срок ношения линз</label>
+          <label class="block font-semibold text-slate-700 mb-1.5">Срок службы линз</label>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="presetButtonGroup">
             <button type="button" data-days="1" class="preset-btn py-2 px-2.5 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all text-center">1 день (Daily)</button>
             <button type="button" data-days="7" class="preset-btn py-2 px-2.5 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all text-center">1 неделя (7 дн)</button>
@@ -435,10 +469,15 @@
           </div>
         </div>
 
-        <div id="wrapperDeductStock" class="p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-2.5">
-          <input type="checkbox" id="checkDeductStock" class="mt-0.5 rounded text-brand-600 focus:ring-brand-500 border-slate-300" checked>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1" for="inputStockInitial">Сколько новых пар сейчас в запасе дома?</label>
+          <input type="number" id="inputStockInitial" min="0" max="100" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500" placeholder="0">
+        </div>
+
+        <div id="wrapperDeductStock" class="hidden p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-2.5">
+          <input type="checkbox" id="checkDeductStock" class="mt-0.5 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
           <label for="checkDeductStock" class="text-xs text-amber-900 leading-snug cursor-pointer">
-            <strong>Списать 1 пару из домашнего запаса</strong> (сейчас в запасе <span id="modalCurrentStockVal">2</span> шт.)
+            <strong>Списать 1 пару из домашнего запаса</strong> (сейчас в запасе <span id="modalCurrentStockVal">0</span> шт.)
           </label>
         </div>
 
@@ -485,7 +524,7 @@
             </div>
             <div>
               <label class="block text-[11px] text-slate-500 mb-0.5" for="inputOdDia">Диаметр (DIA)</label>
-              <input type="text" id="inputOdDia" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-center font-semibold" placeholder="14.3">
+              <input type="text" id="inputOdDia" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-center font-semibold" placeholder="14.2">
             </div>
           </div>
         </div>
@@ -506,7 +545,7 @@
             </div>
             <div>
               <label class="block text-[11px] text-slate-500 mb-0.5" for="inputOsDia">Диаметр (DIA)</label>
-              <input type="text" id="inputOsDia" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-center font-semibold" placeholder="14.3">
+              <input type="text" id="inputOsDia" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-center font-semibold" placeholder="14.2">
             </div>
           </div>
         </div>
@@ -540,7 +579,7 @@
         </div>
         <div>
           <label class="block font-semibold text-slate-700 mb-1" for="inputStoreName">Любимый магазин / Оптика</label>
-          <input type="text" id="inputStoreName" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500" placeholder="Например: Еаптека, Ochkov.net">
+          <input type="text" id="inputStoreName" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-500" placeholder="Например: Еаптека, Оптика">
         </div>
 
         <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
@@ -567,7 +606,7 @@
           <input type="date" id="inputSolutionDate" class="w-full px-3 py-2 rounded-xl border border-slate-300">
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1" for="inputSolutionDays">Срок годности раствора (дней)</label>
+          <label class="block font-semibold text-slate-700 mb-1" for="inputSolutionDays">Срок годности раствора после вскрытия (дней)</label>
           <input type="number" id="inputSolutionDays" min="1" max="365" class="w-full px-3 py-2 rounded-xl border border-slate-300" value="90">
         </div>
         <div>
@@ -614,7 +653,7 @@
         } catch (e) {}
       }
 
-      const STORAGE_KEY = 'freshlens_tracker_v1';
+      const STORAGE_KEY = 'freshlens_user_data_v2';
 
       function toIsoDate(d) {
         const year = d.getFullYear();
@@ -624,6 +663,7 @@
       }
 
       function addDays(isoStr, days) {
+        if (!isoStr) return '';
         const parts = isoStr.split('-').map(Number);
         const d = new Date(parts[0], parts[1] - 1, parts[2]);
         d.setDate(d.getDate() + days);
@@ -631,6 +671,7 @@
       }
 
       function diffDays(startIso, endIso) {
+        if (!startIso || !endIso) return 0;
         const sParts = startIso.split('-').map(Number);
         const eParts = endIso.split('-').map(Number);
         const s = new Date(sParts[0], sParts[1] - 1, sParts[2]);
@@ -639,7 +680,7 @@
       }
 
       function formatRuDate(isoStr) {
-        if (!isoStr) return '';
+        if (!isoStr) return '—';
         const months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
         const p = isoStr.split('-').map(Number);
         return `${p[2]} ${months[p[1] - 1]} ${p[0]}`;
@@ -655,47 +696,93 @@
       const today = new Date();
       const todayIso = toIsoDate(today);
 
-      function getDefaultState() {
-        const sampleStart = addDays(todayIso, -5);
-        const sampleSol = addDays(todayIso, -28);
-        const sampleCase = addDays(todayIso, -44);
-
+      function getInitialEmptyState() {
         return {
+          isConfigured: false,
           activeLens: {
+            isSet: false,
             mode: 'pair',
-            brand: 'Acuvue Oasys with HydraLuxe',
-            startDate: sampleStart,
+            brand: '',
+            startDate: todayIso,
             wearPeriodDays: 14,
-            notes: 'Очень удобные, 14-дневная замена',
-            od: { pwr: '-3.50', bc: '8.4', dia: '14.3', startDate: sampleStart, wearPeriodDays: 14 },
-            os: { pwr: '-3.75', bc: '8.4', dia: '14.3', startDate: sampleStart, wearPeriodDays: 14 }
+            notes: '',
+            od: { pwr: '', bc: '8.4', dia: '14.2', startDate: todayIso, wearPeriodDays: 14 },
+            os: { pwr: '', bc: '8.4', dia: '14.2', startDate: todayIso, wearPeriodDays: 14 }
           },
-          purchase: { stockPairs: 2, deliveryDays: 4, bufferDays: 5, preferredStore: 'Еаптека / Оптика' },
-          hygiene: { solutionDate: sampleSol, solutionPeriodDays: 90, caseDate: sampleCase, casePeriodDays: 60 },
-          history: [
-            { id: 1, brand: 'Acuvue Oasys with HydraLuxe', startDate: addDays(sampleStart, -14), endDate: sampleStart, wearDays: 14, plannedDays: 14, notes: 'Плановая замена в срок' },
-            { id: 2, brand: 'Acuvue Oasys with HydraLuxe', startDate: addDays(sampleStart, -28), endDate: addDays(sampleStart, -14), wearDays: 14, plannedDays: 14, notes: 'Замена по графику' }
-          ]
+          purchase: {
+            stockPairs: 0,
+            deliveryDays: 4,
+            bufferDays: 5,
+            preferredStore: ''
+          },
+          hygiene: {
+            solutionDate: '',
+            solutionPeriodDays: 90,
+            caseDate: '',
+            casePeriodDays: 60
+          },
+          history: []
         };
       }
 
       let appState = null;
 
       function loadState() {
+        let loaded = false;
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) appState = JSON.parse(raw);
-        } catch (e) {}
-        if (!appState) {
-          appState = getDefaultState();
-          saveState();
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+              appState = parsed;
+              loaded = true;
+            }
+          }
+        } catch (e) {
+          console.warn('localStorage error', e);
+        }
+
+        if (!loaded) {
+          appState = getInitialEmptyState();
+        }
+
+        renderApp();
+
+        if (tg && tg.CloudStorage) {
+          try {
+            tg.CloudStorage.getItem(STORAGE_KEY, (err, val) => {
+              if (!err && val) {
+                try {
+                  const cloudObj = JSON.parse(val);
+                  if (cloudObj && cloudObj.isConfigured !== undefined) {
+                    appState = cloudObj;
+                    try { localStorage.setItem(STORAGE_KEY, val); } catch (ex) {}
+                    renderApp();
+                  }
+                } catch (e2) {}
+              }
+            });
+          } catch (e3) {}
         }
       }
 
       function saveState() {
+        const jsonStr = JSON.stringify(appState);
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-        } catch (e) {}
+          localStorage.setItem(STORAGE_KEY, jsonStr);
+        } catch (e) {
+          console.warn('localStorage save failed', e);
+        }
+
+        if (tg && tg.CloudStorage) {
+          try {
+            tg.CloudStorage.setItem(STORAGE_KEY, jsonStr, (err, saved) => {
+              if (err) console.warn('CloudStorage setItem error', err);
+            });
+          } catch (e) {
+            console.warn('CloudStorage setItem exception', e);
+          }
+        }
       }
 
       function showToast(message, type = 'info') {
@@ -721,6 +808,24 @@
 
       function renderApp() {
         renderHeader();
+        const isReady = appState && appState.isConfigured && appState.activeLens && appState.activeLens.isSet;
+
+        const zeroState = document.getElementById('sectionZeroState');
+        const activeTracker = document.getElementById('sectionActiveTracker');
+        const headerActionText = document.getElementById('headerActionText');
+
+        if (!isReady) {
+          zeroState.classList.remove('hidden');
+          activeTracker.classList.add('hidden');
+          document.getElementById('smartPurchaseBanner').classList.add('hidden');
+          headerActionText.textContent = 'Настроить линзы';
+          return;
+        }
+
+        zeroState.classList.add('hidden');
+        activeTracker.classList.remove('hidden');
+        headerActionText.textContent = 'Новая пара';
+
         renderActiveLenses();
         renderPurchaseCalculator();
         renderHygiene();
@@ -730,6 +835,7 @@
       function renderHeader() {
         const el = document.getElementById('headerDateDisplay');
         if (el) el.textContent = `Сегодня: ${formatRuFullDate(todayIso)}`;
+
         const badge = document.getElementById('tgUserBadge');
         if (badge && tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
           const u = tg.initDataUnsafe.user;
@@ -738,6 +844,9 @@
       }
 
       function getLensStatusInfo(startIso, totalDays) {
+        if (!startIso) {
+          return { elapsed: 0, daysWorn: 0, daysLeft: totalDays, currentDayNumber: 1, percent: 100, endDateIso: '', statusKey: 'fresh', badgeText: 'Свежие', badgeClass: 'bg-emerald-100 text-emerald-800', strokeColor: '#0d9488' };
+        }
         const elapsed = diffDays(startIso, todayIso);
         const daysWorn = Math.max(0, elapsed);
         const daysLeft = totalDays - daysWorn;
@@ -823,7 +932,7 @@
           }
         }
 
-        document.getElementById('displayBrandName').textContent = lens.brand || 'Контактные линзы';
+        document.getElementById('displayBrandName').textContent = lens.brand || 'Мои линзы';
         document.getElementById('displayStartDate').textContent = formatRuDate(lens.startDate);
 
         let durLabel = `${lens.wearPeriodDays} дн.`;
@@ -847,8 +956,8 @@
           daysLeftEl.className = 'font-bold text-slate-900';
         }
 
-        document.getElementById('quickOD').textContent = lens.od.pwr || '-';
-        document.getElementById('quickOS').textContent = lens.os.pwr || '-';
+        document.getElementById('quickOD').textContent = lens.od.pwr || '—';
+        document.getElementById('quickOS').textContent = lens.os.pwr || '—';
         document.getElementById('quickBC').textContent = `BC ${lens.od.bc || '8.4'}`;
       }
 
@@ -859,7 +968,7 @@
 
         document.getElementById('badgeStatusOD').textContent = odInfo.badgeText;
         document.getElementById('badgeStatusOD').className = `text-[11px] font-semibold px-2 py-0.5 rounded-full ${odInfo.badgeClass}`;
-        document.getElementById('sepDiopterOD').textContent = lens.od.pwr || '-';
+        document.getElementById('sepDiopterOD').textContent = lens.od.pwr || '—';
         document.getElementById('sepStartDateOD').textContent = formatRuDate(lens.od.startDate);
         document.getElementById('sepPeriodOD').textContent = `${lens.od.wearPeriodDays} дн.`;
         document.getElementById('sepEndDateOD').textContent = formatRuDate(odInfo.endDateIso);
@@ -869,7 +978,7 @@
 
         document.getElementById('badgeStatusOS').textContent = osInfo.badgeText;
         document.getElementById('badgeStatusOS').className = `text-[11px] font-semibold px-2 py-0.5 rounded-full ${osInfo.badgeClass}`;
-        document.getElementById('sepDiopterOS').textContent = lens.os.pwr || '-';
+        document.getElementById('sepDiopterOS').textContent = lens.os.pwr || '—';
         document.getElementById('sepStartDateOS').textContent = formatRuDate(lens.os.startDate);
         document.getElementById('sepPeriodOS').textContent = `${lens.os.wearPeriodDays} дн.`;
         document.getElementById('sepEndDateOS').textContent = formatRuDate(osInfo.endDateIso);
@@ -893,7 +1002,7 @@
           activeDaysLeft = Math.max(0, Math.min(odInfo.daysLeft, osInfo.daysLeft));
         }
 
-        const stockPairs = Math.max(0, purchase.stockPairs);
+        const stockPairs = Math.max(0, Number(purchase.stockPairs) || 0);
         document.getElementById('displayStockPairs').textContent = stockPairs;
 
         const totalStockDays = activeDaysLeft + (stockPairs * wearDuration);
@@ -930,7 +1039,7 @@
           recDate.className = 'text-xl sm:text-2xl font-black text-rose-700';
           recBadge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-rose-200 text-rose-900';
           recBadge.textContent = overdueDays === 0 ? 'Сегодня крайний срок' : `Опоздание на ${overdueDays} дн!`;
-          recDesc.textContent = `Запас линз иссякнет ${formatRuDate(totalRunoutDateIso)} (через ${totalStockDays} дн.). Оформите заказ прямо сейчас!`;
+          recDesc.textContent = `Запас иссякнет ${formatRuDate(totalRunoutDateIso)} (${totalStockDays} дн.). В наличии ${stockPairs} пар. Оформите заказ прямо сейчас!`;
 
           topBanner.classList.remove('hidden');
           topBanner.className = 'rounded-2xl p-4 sm:p-5 border bg-rose-50/90 border-rose-200 text-rose-900 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4';
@@ -975,65 +1084,75 @@
 
       function renderHygiene() {
         const h = appState.hygiene;
-        const solElapsed = diffDays(h.solutionDate, todayIso);
-        const solDaysLeft = h.solutionPeriodDays - solElapsed;
-        const solPercent = Math.max(0, Math.min(100, Math.round((solDaysLeft / h.solutionPeriodDays) * 100)));
-
-        document.getElementById('hygieneSolutionOpened').textContent = formatRuDate(h.solutionDate);
-        const solDaysLeftEl = document.getElementById('hygieneSolutionDaysLeft');
-        const solBadge = document.getElementById('hygieneSolutionBadge');
-        const solBar = document.getElementById('hygieneSolutionBar');
-
-        if (solDaysLeft <= 0) {
-          solDaysLeftEl.textContent = 'Срок истёк!';
-          solDaysLeftEl.className = 'text-rose-600 font-bold';
-          solBadge.textContent = 'Утилизировать!';
-          solBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800';
-          solBar.style.backgroundColor = '#e11d48';
-        } else if (solDaysLeft <= 14) {
-          solDaysLeftEl.textContent = `${solDaysLeft} дн.`;
-          solDaysLeftEl.className = 'text-amber-700 font-bold';
-          solBadge.textContent = 'Заканчивается';
-          solBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
-          solBar.style.backgroundColor = '#f59e0b';
+        if (!h.solutionDate) {
+          document.getElementById('hygieneSolutionOpened').textContent = 'Не указано';
+          document.getElementById('hygieneSolutionDaysLeft').textContent = '—';
+          document.getElementById('hygieneSolutionBar').style.width = '0%';
         } else {
-          solDaysLeftEl.textContent = `${solDaysLeft} дн.`;
-          solDaysLeftEl.className = 'text-slate-800 font-semibold';
-          solBadge.textContent = 'Годен';
-          solBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
-          solBar.style.backgroundColor = '#0284c7';
+          const solElapsed = diffDays(h.solutionDate, todayIso);
+          const solDaysLeft = h.solutionPeriodDays - solElapsed;
+          const solPercent = Math.max(0, Math.min(100, Math.round((solDaysLeft / h.solutionPeriodDays) * 100)));
+          document.getElementById('hygieneSolutionOpened').textContent = formatRuDate(h.solutionDate);
+          const solDaysLeftEl = document.getElementById('hygieneSolutionDaysLeft');
+          const solBadge = document.getElementById('hygieneSolutionBadge');
+          const solBar = document.getElementById('hygieneSolutionBar');
+
+          if (solDaysLeft <= 0) {
+            solDaysLeftEl.textContent = 'Срок истёк!';
+            solDaysLeftEl.className = 'text-rose-600 font-bold';
+            solBadge.textContent = 'Утилизировать!';
+            solBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800';
+            solBar.style.backgroundColor = '#e11d48';
+          } else if (solDaysLeft <= 14) {
+            solDaysLeftEl.textContent = `${solDaysLeft} дн.`;
+            solDaysLeftEl.className = 'text-amber-700 font-bold';
+            solBadge.textContent = 'Заканчивается';
+            solBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+            solBar.style.backgroundColor = '#f59e0b';
+          } else {
+            solDaysLeftEl.textContent = `${solDaysLeft} дн.`;
+            solDaysLeftEl.className = 'text-slate-800 font-semibold';
+            solBadge.textContent = 'Годен';
+            solBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+            solBar.style.backgroundColor = '#0284c7';
+          }
+          solBar.style.width = `${solPercent}%`;
         }
-        solBar.style.width = `${solPercent}%`;
 
-        const caseElapsed = diffDays(h.caseDate, todayIso);
-        const caseDaysLeft = h.casePeriodDays - caseElapsed;
-        const casePercent = Math.max(0, Math.min(100, Math.round((caseDaysLeft / h.casePeriodDays) * 100)));
-
-        document.getElementById('hygieneCaseOpened').textContent = formatRuDate(h.caseDate);
-        const caseDaysLeftEl = document.getElementById('hygieneCaseDaysLeft');
-        const caseBadge = document.getElementById('hygieneCaseBadge');
-        const caseBar = document.getElementById('hygieneCaseBar');
-
-        if (caseDaysLeft <= 0) {
-          caseDaysLeftEl.textContent = 'Смените контейнер!';
-          caseDaysLeftEl.className = 'text-rose-600 font-bold';
-          caseBadge.textContent = 'Пора сменить';
-          caseBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800';
-          caseBar.style.backgroundColor = '#e11d48';
-        } else if (caseDaysLeft <= 10) {
-          caseDaysLeftEl.textContent = `${caseDaysLeft} дн.`;
-          caseDaysLeftEl.className = 'text-amber-700 font-bold';
-          caseBadge.textContent = 'Скоро замена';
-          caseBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
-          caseBar.style.backgroundColor = '#f59e0b';
+        if (!h.caseDate) {
+          document.getElementById('hygieneCaseOpened').textContent = 'Не указано';
+          document.getElementById('hygieneCaseDaysLeft').textContent = '—';
+          document.getElementById('hygieneCaseBar').style.width = '0%';
         } else {
-          caseDaysLeftEl.textContent = `${caseDaysLeft} дн.`;
-          caseDaysLeftEl.className = 'text-slate-800 font-semibold';
-          caseBadge.textContent = 'Чистый';
-          caseBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
-          caseBar.style.backgroundColor = '#0d9488';
+          const caseElapsed = diffDays(h.caseDate, todayIso);
+          const caseDaysLeft = h.casePeriodDays - caseElapsed;
+          const casePercent = Math.max(0, Math.min(100, Math.round((caseDaysLeft / h.casePeriodDays) * 100)));
+          document.getElementById('hygieneCaseOpened').textContent = formatRuDate(h.caseDate);
+          const caseDaysLeftEl = document.getElementById('hygieneCaseDaysLeft');
+          const caseBadge = document.getElementById('hygieneCaseBadge');
+          const caseBar = document.getElementById('hygieneCaseBar');
+
+          if (caseDaysLeft <= 0) {
+            caseDaysLeftEl.textContent = 'Смените контейнер!';
+            caseDaysLeftEl.className = 'text-rose-600 font-bold';
+            caseBadge.textContent = 'Пора сменить';
+            caseBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800';
+            caseBar.style.backgroundColor = '#e11d48';
+          } else if (caseDaysLeft <= 10) {
+            caseDaysLeftEl.textContent = `${caseDaysLeft} дн.`;
+            caseDaysLeftEl.className = 'text-amber-700 font-bold';
+            caseBadge.textContent = 'Скоро замена';
+            caseBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+            caseBar.style.backgroundColor = '#f59e0b';
+          } else {
+            caseDaysLeftEl.textContent = `${caseDaysLeft} дн.`;
+            caseDaysLeftEl.className = 'text-slate-800 font-semibold';
+            caseBadge.textContent = 'Чистый';
+            caseBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+            caseBar.style.backgroundColor = '#0d9488';
+          }
+          caseBar.style.width = `${casePercent}%`;
         }
-        caseBar.style.width = `${casePercent}%`;
       }
 
       function renderHistory() {
@@ -1041,7 +1160,7 @@
         if (!container) return;
         const list = appState.history || [];
         if (list.length === 0) {
-          container.innerHTML = `<div class="py-8 text-center text-xs text-slate-400">История замен пока пуста.</div>`;
+          container.innerHTML = `<div class="py-6 text-center text-xs text-slate-400">История замен пуста. Завершённые циклы будут сохраняться здесь автоматически.</div>`;
           return;
         }
 
@@ -1095,11 +1214,25 @@
         const inputDate = document.getElementById('inputStartDate');
         const customWrapper = document.getElementById('customDaysWrapper');
         const customInput = document.getElementById('inputCustomDays');
+        const inputStock = document.getElementById('inputStockInitial');
+        const deductWrapper = document.getElementById('wrapperDeductStock');
+        const checkDeduct = document.getElementById('checkDeductStock');
         const stockVal = document.getElementById('modalCurrentStockVal');
 
-        stockVal.textContent = appState.purchase.stockPairs;
+        inputStock.value = appState.purchase.stockPairs || 0;
+        stockVal.textContent = appState.purchase.stockPairs || 0;
+
+        const isAlreadyConfigured = appState.isConfigured && appState.activeLens.isSet;
+
+        if (isAlreadyConfigured) {
+          deductWrapper.classList.remove('hidden');
+          checkDeduct.checked = false;
+        } else {
+          deductWrapper.classList.add('hidden');
+        }
+
         if (mode === 'pair') {
-          title.textContent = 'Параметры текущей пары линз';
+          title.textContent = isAlreadyConfigured ? 'Параметры текущей пары линз' : 'Настройка вашей первой пары линз';
           inputBrand.value = appState.activeLens.brand || '';
           inputDate.value = appState.activeLens.startDate || todayIso;
           selectedPresetDays = appState.activeLens.wearPeriodDays || 14;
@@ -1161,24 +1294,30 @@
 
       document.getElementById('formEditLens').addEventListener('submit', (e) => {
         e.preventDefault();
-        const brand = document.getElementById('inputBrand').value.trim() || 'Контактные линзы';
+        const brand = document.getElementById('inputBrand').value.trim() || 'Мои контактные линзы';
         const startDate = document.getElementById('inputStartDate').value || todayIso;
         const notes = document.getElementById('inputNotes').value.trim();
+        const stockInputVal = Number(document.getElementById('inputStockInitial').value) || 0;
         const deduct = document.getElementById('checkDeductStock').checked;
 
         let finalDays = selectedPresetDays;
         if (finalDays <= 0) finalDays = 14;
-        if (deduct && appState.purchase.stockPairs > 0) appState.purchase.stockPairs -= 1;
+
+        appState.purchase.stockPairs = Math.max(0, stockInputVal);
+        if (deduct && appState.purchase.stockPairs > 0) {
+          appState.purchase.stockPairs -= 1;
+        }
 
         if (currentEditMode === 'pair') {
           const prev = appState.activeLens;
-          if (prev.startDate && prev.startDate !== startDate) {
+          if (prev.isSet && prev.startDate && prev.startDate !== startDate) {
             const worn = Math.max(1, diffDays(prev.startDate, startDate));
             appState.history.unshift({
               id: Date.now(), brand: prev.brand, startDate: prev.startDate,
               endDate: startDate, wearDays: worn, plannedDays: prev.wearPeriodDays, notes: notes || 'Замена пары'
             });
           }
+          appState.activeLens.isSet = true;
           appState.activeLens.brand = brand;
           appState.activeLens.startDate = startDate;
           appState.activeLens.wearPeriodDays = finalDays;
@@ -1187,6 +1326,11 @@
           appState.activeLens.od.wearPeriodDays = finalDays;
           appState.activeLens.os.startDate = startDate;
           appState.activeLens.os.wearPeriodDays = finalDays;
+
+          if (!appState.hygiene.solutionDate) appState.hygiene.solutionDate = startDate;
+          if (!appState.hygiene.caseDate) appState.hygiene.caseDate = startDate;
+
+          appState.isConfigured = true;
         } else if (currentEditMode === 'od') {
           appState.activeLens.od.startDate = startDate;
           appState.activeLens.od.wearPeriodDays = finalDays;
@@ -1198,7 +1342,7 @@
         saveState();
         renderApp();
         closeEditModal();
-        showToast('Параметры линз обновлены!', 'success');
+        showToast('Параметры линз успешно сохранены!', 'success');
       });
 
       function openRxModal() {
@@ -1255,16 +1399,16 @@
         saveState();
         renderApp();
         closePurchaseModal();
-        showToast('Настройки обновлены!', 'success');
+        showToast('Настройки покупки обновлены!', 'success');
       });
 
       function openHygieneModal() {
         triggerHaptic('light');
         const modal = document.getElementById('modalHygieneSettings');
-        document.getElementById('inputSolutionDate').value = appState.hygiene.solutionDate;
-        document.getElementById('inputSolutionDays').value = appState.hygiene.solutionPeriodDays;
-        document.getElementById('inputCaseDate').value = appState.hygiene.caseDate;
-        document.getElementById('inputCaseDays').value = appState.hygiene.casePeriodDays;
+        document.getElementById('inputSolutionDate').value = appState.hygiene.solutionDate || todayIso;
+        document.getElementById('inputSolutionDays').value = appState.hygiene.solutionPeriodDays || 90;
+        document.getElementById('inputCaseDate').value = appState.hygiene.caseDate || todayIso;
+        document.getElementById('inputCaseDays').value = appState.hygiene.casePeriodDays || 60;
         modal.classList.remove('hidden');
       }
 
@@ -1282,7 +1426,7 @@
         saveState();
         renderApp();
         closeHygieneModal();
-        showToast('Сроки обновлены!', 'success');
+        showToast('Сроки раствора и контейнера обновлены!', 'success');
       });
 
       document.getElementById('btnIncrementStock').addEventListener('click', () => {
@@ -1338,6 +1482,14 @@
         showToast('История очищена', 'info');
       });
 
+      document.getElementById('btnResetAllData').addEventListener('click', () => {
+        triggerHaptic('warning');
+        appState = getInitialEmptyState();
+        saveState();
+        renderApp();
+        showToast('Все данные сброшены. Можно настроить заново.', 'info');
+      });
+
       document.getElementById('btnModePair').addEventListener('click', () => {
         triggerHaptic('light');
         appState.activeLens.mode = 'pair';
@@ -1354,6 +1506,7 @@
         renderPurchaseCalculator();
       });
 
+      document.getElementById('btnStartSetup').addEventListener('click', () => openEditModal('pair'));
       document.getElementById('btnOpenPrescription').addEventListener('click', openRxModal);
       document.getElementById('btnCloseModalRx').addEventListener('click', closeRxModal);
       document.getElementById('btnCancelRx').addEventListener('click', closeRxModal);
@@ -1384,6 +1537,7 @@
       document.getElementById('btnCopyOrderSpecs').addEventListener('click', copyPrescriptionToClipboard);
 
       function downloadIcs(title, description, startIsoDate) {
+        if (!startIsoDate) return;
         triggerHaptic('medium');
         const p = startIsoDate.split('-').map(Number);
         const y = p[0], m = String(p[1]).padStart(2, '0'), d = String(p[2]).padStart(2, '0');
@@ -1426,7 +1580,6 @@
       });
 
       loadState();
-      renderApp();
 
     })();
   </script>
